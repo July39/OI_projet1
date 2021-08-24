@@ -1,8 +1,5 @@
 
 
-from enum import Enum
-
-
 __all__ = ["MQTT_BROKER", 
            "CLIENT_CONSOLE", 
            "CLIENT_SMARTPLUG1",
