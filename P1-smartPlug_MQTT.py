@@ -1,13 +1,14 @@
 '''
-Created on 21 juin 2021
-
-@author: gills
+Subscribes to commands and publishes states
 '''
+
 from RPiSim import GPIO
 import paho.mqtt.client as mqtt
 import time
 import sys
 import signal
+from project1.constants import *
+
 
 def terminer(signum, frame):
     print("Terminer")
@@ -20,23 +21,23 @@ def event_17(channel):
     if GPIO.input(18):
         GPIO.output(18, GPIO.LOW)
         print("DEL Off")
-        client.publish("Gills/Etats", "off")
+        client.publish(TOPIC_STATE, SMARTPLUG1_STATE_OFF)
     else:
         GPIO.output(18, GPIO.HIGH)
         print("DEL On")
-        client.publish("Gills/Etats", "on")
+        client.publish(TOPIC_STATE, SMARTPLUG1_STATE_ON)
 
 def on_message(client, userdata, message):
     print("received message: " , str(message.payload.decode("utf-8")))
     commande = str(message.payload.decode("utf-8"))
-    if commande == "on":
+    if commande == SMARTPLUG1_CMD_ON:
         GPIO.output(18, GPIO.HIGH)
         print("DEL On")
-        client.publish("Gills/Etats", "on")
-    elif commande == "off":
+        client.publish(TOPIC_STATE, SMARTPLUG1_STATE_ON)
+    elif commande == SMARTPLUG1_CMD_OFF:
         GPIO.output(18, GPIO.LOW)
         print("DEL Off")
-        client.publish("Gills/Etats", "off")
+        client.publish(TOPIC_STATE, SMARTPLUG1_STATE_OFF)
 
 """ Les GPIO  """
 signal.signal(signal.SIGINT, terminer)
@@ -52,15 +53,13 @@ except Exception:
     print("Problème avec les GPIO")
 
 """ MQTT """
-#mqttBroker ="mqtt.eclipseprojects.io" #Utilise le port 80
-mqttBroker ="127.01.01.1" #Utilise le port 80
-
-client = mqtt.Client("SmartPlug1")
-client.connect(mqttBroker) 
+client = mqtt.Client(CLIENT_SMARTPLUG1)
+client.connect(MQTT_BROKER) 
 client.loop_start()
-client.subscribe("Gills/Commandes")
-client.on_message=on_message 
+client.subscribe(TOPIC_COMMAND)
+client.on_message = on_message 
     
 while True:
     time.sleep(0.5)
     
+

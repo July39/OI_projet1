@@ -1,11 +1,10 @@
 '''
-Created on 21 juin 2021
-
-@author: gills
-Référence: https://support.asplhosting.com/t/working-myqtthub-com-python-paho-examples/43
+Subscribes to states and publishes commands
 '''
+
 from tkinter import *
-import paho.mqtt.client as mqtt 
+import paho.mqtt.client as mqtt
+from project1.constants import *
 
 """ Quitter proprement """
 def fermer():
@@ -15,26 +14,21 @@ def fermer():
     fen1.destroy()
 
 def cmd_on():
-    client.publish("Gills/Commandes", "on")
+    client.publish(TOPIC_COMMAND, SMARTPLUG1_CMD_ON)
 
 def cmd_off():
-    client.publish("Gills/Commandes", "off")
+    client.publish(TOPIC_COMMAND, SMARTPLUG1_CMD_OFF)
     
 def on_message(client, userdata, message):
-    print("received message: " ,str(message.payload.decode("utf-8")))
+    print("received message: ", str(message.payload.decode("utf-8")))
     lblEtat.configure(text=str(message.payload.decode("utf-8")))
     
 """ MQTT """
-#mqttBroker ="mqtt.eclipseprojects.io" +
-mqttBroker =  "127.01.01.1"
-
-client = mqtt.Client("Console")
-client.connect(mqttBroker) 
-
+client = mqtt.Client(CLIENT_CONSOLE)
+client.connect(MQTT_BROKER) 
 client.loop_start()
-
-client.subscribe("Gills/Etats")
-client.on_message=on_message 
+client.subscribe(TOPIC_STATE)
+client.on_message = on_message 
 
 """ Interface Tk """
 fen1 = Tk()
@@ -42,10 +36,8 @@ fen1.protocol("WM_DELETE_WINDOW", fermer)
 
 lblEtat = Label(fen1, text="Etat", fg='red', font="Helvetica 20 bold")
 lblEtat.grid(row = 0, column = 0, columnspan = 2)
-
 btn1 = Button(fen1, text='ON', font="Helvetica 20 bold", command = cmd_on)
 btn1.grid(row = 1, column = 0)
-
 btn2 = Button(fen1, text='OFF', font="Helvetica 20 bold", command = cmd_off)
 btn2.grid(row = 1, column = 1)
 
