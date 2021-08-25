@@ -7,7 +7,7 @@ from enum import Enum
 from RPiSim import GPIO
 import paho.mqtt.client as mqtt
 from threading import Thread
-from project1.constants import *
+from project1.constants import * 
 import sys
 import signal
 import time

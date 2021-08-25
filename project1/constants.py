@@ -3,7 +3,7 @@
 __all__ = ["MQTT_BROKER", 
            "CLIENT_CONSOLE", 
            "CLIENT_SMARTPLUG1",
-           "CLIENT_SYSALARM"
+           "CLIENT_SYSALARM",
            "TOPIC_STATE",
            "TOPIC_COMMAND",
            "SYSALARM_STATE_OFF",
@@ -21,11 +21,11 @@ MQTT_BROKER = "127.00.00.01"
 """MQTT clients"""
 CLIENT_CONSOLE    = "Console"
 CLIENT_SMARTPLUG1 = "SmartPlug1"
-CLIENT_SYSALARM = "ALarmSystem"
+CLIENT_SYSALARM = "SysAlarm"
 
 
 """MQTT topics"""
-TOPIC_STATE   = "Gills/Etats"
+TOPIC_STATE = "Gills/Etats"
 TOPIC_COMMAND = "Gills/Commandes"
 
 """SmartPlug1 states"""
