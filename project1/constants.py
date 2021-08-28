@@ -1,6 +1,9 @@
 
 
-__all__ = ["MQTT_BROKER", 
+__all__ = ["DATE_FORMAT",
+           "TIME_FORMAT",
+           "MQTT_BROKER", 
+           "MONGODB_URI",
            "CLIENT_CONSOLE", 
            "CLIENT_SMARTPLUG1",
            "CLIENT_SYSALARM",
@@ -15,14 +18,20 @@ __all__ = ["MQTT_BROKER",
            "SMARTPLUG1_CMD_OFF",
            "SMARTPLUG1_CMD_ON"]
 
+
+"""date/time format"""
+DATE_FORMAT = "%Y/%m/%d"
+TIME_FORMAT = "%H:%M"
+
 """MQTT broker"""
 MQTT_BROKER = "127.00.00.01"
+
+MONGODB_URI = "localhost"
 
 """MQTT clients"""
 CLIENT_CONSOLE    = "Console"
 CLIENT_SMARTPLUG1 = "SmartPlug1"
 CLIENT_SYSALARM = "SysAlarm"
-
 
 """MQTT topics"""
 TOPIC_STATE = "Gills/Etats"
@@ -34,7 +43,7 @@ SMARTPLUG1_STATE_ON  = "on"
 
 """SmartPlug1 commands"""
 SMARTPLUG1_CMD_OFF = "off"
-SMARTPLUG1_CMD_ON = "on"
+SMARTPLUG1_CMD_ON  = "on"
 
 """System alarm states"""
 SYSALARM_STATE_OFF = "off"
@@ -42,6 +51,6 @@ SYSALARM_STATE_ON  = "on"
 
 """System alarm commands"""
 SYSALARM_CMD_OFF = "off"
-SYSALARM_CMD_ON = "on"
+SYSALARM_CMD_ON  = "on"
 
 

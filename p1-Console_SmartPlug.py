@@ -18,7 +18,7 @@ def cmd_on():
 
 def cmd_off():
     client.publish(TOPIC_COMMAND, SMARTPLUG1_CMD_OFF)
-    
+
 def on_message(client, userdata, message):
     print("received message: ", str(message.payload.decode("utf-8")))
     lblEtat.configure(text=str(message.payload.decode("utf-8")))

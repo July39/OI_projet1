@@ -29,7 +29,6 @@ def event_bouton(channel):
         GPIO.output(LUMIERE_PIN, GPIO.HIGH)
         print("DEL On")
         client.publish(TOPIC_STATE, SMARTPLUG1_STATE_ON)
-
 def on_message(client, userdata, message):
     print("received message: " , str(message.payload.decode("utf-8")))
     commande = str(message.payload.decode("utf-8"))
