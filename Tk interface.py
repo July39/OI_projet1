@@ -7,19 +7,26 @@ from project1.eventlog import *
 
 
 def fermer():
-    pass
+    print('Quitter proprement')
+    client.loop_stop()
+    client.disconnect()
+    fen1.destroy()
 
-def cmd_on():
-    pass
+def sys_alarm_cmd_on():
+    print('salarm ystem off by console')
+    client.publish(TOPIC_COMMAND, SYSALARM_CMD_ON)
 
-def cmd_off():
-    pass
+def sys_alarm_cmd_off():
+    """ turn off alarm system using MQTT """
+    print('alarm system off by console')
+    client.publish(TOPIC_COMMAND, SYSALARM_CMD_OFF)
 
 def turn_smartplug_on():
 
     # ============================
     # turn on smartplug using MQTT
     # ============================
+    print('smart plug on by console')
     client.publish(TOPIC_COMMAND, SMARTPLUG1_CMD_ON)
 
 def turn_smartplug_off():
@@ -27,8 +34,14 @@ def turn_smartplug_off():
     # =============================
     # turn off smartplug using MQTT
     # =============================
+    print('smart plug off by console')
     client.publish(TOPIC_COMMAND, SMARTPLUG1_CMD_OFF)
 
+def light_cmd_on():
+    pass
+
+def light_cmd_off():
+    pass
 
 def show_history():
 
@@ -45,7 +58,7 @@ def show_history():
         resultat.insert(INSERT, event["date"] + "\t" + event["time"] + "\t" + event["state"] + "\n")
 
     resultat.grid(row = 0, column = 0, columnspan = 3)
-    Button(fen2, text = "Quitter", font="Helvetica 15", command =afficherHistorique)
+    Button(fen2, text = "Quitter", font="Helvetica 15", command =show_history)
     fen2.mainloop()
 
 
@@ -84,9 +97,9 @@ fen1.title("Console de controle")
 # =================================================================
 lblEtat = Label(fen1, text="Alarme", fg='black', font="Helvetica 20 bold")
 lblEtat.grid(row = 0, column = 0, columnspan = 2)
-btn1 = Button(fen1, text='ON', fg='green', font="Helvetica 20 bold", command = cmd_on)
+btn1 = Button(fen1, text='ON', fg='green', font="Helvetica 20 bold", command = sys_alarm_cmd_on)
 btn1.grid(row = 1, column = 0)
-btn2 = Button(fen1, text='OFF',fg='red', font="Helvetica 20 bold", command = cmd_off)
+btn2 = Button(fen1, text='OFF',fg='red', font="Helvetica 20 bold", command = sys_alarm_cmd_off)
 btn2.grid(row = 1, column = 1)
 
 # =================================================================
@@ -94,9 +107,9 @@ btn2.grid(row = 1, column = 1)
 # =================================================================
 lblEtat = Label(fen1, text="Lumiere entrée", fg='black', font="Helvetica 20 bold")
 lblEtat.grid(row = 2, column = 0, columnspan = 2)
-btn3 = Button(fen1, text='ON',fg='green', font="Helvetica 20 bold", command = cmd_on)
+btn3 = Button(fen1, text='ON',fg='green', font="Helvetica 20 bold", command = light_cmd_on)
 btn3.grid(row = 3, column = 0)
-btn4 = Button(fen1, text='OFF',fg='red', font="Helvetica 20 bold", command = cmd_off)
+btn4 = Button(fen1, text='OFF',fg='red', font="Helvetica 20 bold", command = light_cmd_off)
 btn4.grid(row = 3, column = 1)
 
 # =================================================================

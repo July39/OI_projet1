@@ -51,7 +51,7 @@ def event_porte(channel):
     print("event porte")
     setEtat(Event.porte)
 
-def setEtat(event):
+def setEtat(event,commande = ''):
     global etat
     print("set etat")
     if event == Event.btnArm:
@@ -93,6 +93,7 @@ def setEtat(event):
             # Afficher ecran Désarmé
         elif etat == Etat.DELAI_E:
             print("Sirene")
+            client.publish(TOPIC_STATE, SYSALARM_INTRUDER)
             etat = Etat.SIRENE
             GPIO.output(SIRENE_PIN, GPIO.HIGH)
     elif event == Event.porte:
@@ -101,7 +102,19 @@ def setEtat(event):
             etat = Etat.DELAI_E
             thread = Thread(target=blinkDEL, args=())
             thread.start()
-              
+            """Si on lit 2 fois de suite systeme on, remet l'état à on"""
+
+    if event == Event.boutonInterface:
+        if commande == 'ON':
+            print("Armeture systeme")
+            etat = Etat.ARME
+            GPIO.output(DEL_PIN, GPIO.HIGH)
+        else :
+            print("Désarmé systeme alarme")
+            etat = Etat.OFF
+            GPIO.output(DEL_PIN, GPIO.LOW)
+            GPIO.output(SIRENE_PIN, GPIO.LOW)
+            
 
 def blinkDEL():
     DELAI = 5
@@ -121,14 +134,14 @@ def blinkDEL():
 def on_message(client, userdata, message):
     print("received message: " , str(message.payload.decode("utf-8")))
     commande = str(message.payload.decode("utf-8"))
-    if commande == SMARTPLUG1_CMD_ON:
-        GPIO.output(18, GPIO.HIGH)
-        print("DEL On")
-        client.publish(TOPIC_STATE, SMARTPLUG1_STATE_ON)
-    elif commande == SMARTPLUG1_CMD_OFF:
-        GPIO.output(18, GPIO.LOW)
-        print("DEL Off")
-        client.publish(TOPIC_STATE, SMARTPLUG1_STATE_OFF)      
+    if commande == SYSALARM_CMD_ON:
+        print("systeme armé par console")
+        setEtat(Event.boutonInterface,'ON')
+        client.publish(TOPIC_STATE, SYSALARM_STATE_ON)
+    elif commande == SYSALARM_CMD_OFF:
+        print("systeme desarme par la console")
+        setEtat(Event.boutonInterface,'OFF')
+        client.publish(TOPIC_STATE, SYSALARM_STATE_OFF)      
 
 
 ###################################            
@@ -165,7 +178,6 @@ client.subscribe(TOPIC_COMMAND)
 client.on_message = on_message 
     
 while True:
-    
     time.sleep(0.5)
     
     
