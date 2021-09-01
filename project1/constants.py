@@ -13,10 +13,15 @@ __all__ = ["DATE_FORMAT",
            "SYSALARM_STATE_ON",
            "SYSALARM_CMD_OFF",
            "SYSALARM_CMD_ON",
+           "SYSALARM_INTRUDER",
            "SMARTPLUG1_STATE_OFF",
            "SMARTPLUG1_STATE_ON",
            "SMARTPLUG1_CMD_OFF",
-           "SMARTPLUG1_CMD_ON"]
+           "SMARTPLUG1_CMD_ON",
+           "LIGHT_STATE_OFF",
+           "LIGHT_STATE_ON",
+           "LIGHT_CMD_OFF",
+           "LIGHT_CMD_ON"]
 
 
 """date/time format"""
@@ -48,9 +53,17 @@ SMARTPLUG1_CMD_ON  = "on"
 """System alarm states"""
 SYSALARM_STATE_OFF = "off"
 SYSALARM_STATE_ON  = "on"
+SYSALARM_INTRUDER  = "panic"
 
 """System alarm commands"""
 SYSALARM_CMD_OFF = "off"
 SYSALARM_CMD_ON  = "on"
 
+"""Light states"""
+LIGHT_STATE_OFF = "off"
+LIGHT_STATE_ON  = "on"
+
+"""Light commands"""
+LIGHT_CMD_OFF = "off"
+LIGHT_CMD_ON  = "on"
 
