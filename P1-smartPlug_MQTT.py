@@ -7,11 +7,14 @@ import paho.mqtt.client as mqtt
 import time
 import sys
 import signal
+import json
 from project1.constants import *
 
-BOUTON_PIN = 17
+
+BOUTON_PIN  = 17
 LUMIERE_PIN = 18
-DEL_PIN = 23
+DEL_PIN     = 23
+
 
 def terminer(signum, frame):
     print("Terminer")
@@ -19,28 +22,68 @@ def terminer(signum, frame):
     GPIO.cleanup()
     sys.exit(0)
 
+
 def event_bouton(channel):
     print("event_17: Bouton poussoir")
     if GPIO.input(LUMIERE_PIN):
         GPIO.output(LUMIERE_PIN, GPIO.LOW)
         print("DEL Off")
-        client.publish(TOPIC_STATE, SMARTPLUG1_STATE_OFF)
+
+        # ================================================
+        # turn off the smartplug and publish the new state
+        # ================================================
+        msg = {}
+        msg['id'] = CLIENT_SMARTPLUG1
+        msg['cmd'] = SMARTPLUG1_STATE_OFF
+        client.publish(TOPIC_STATE, json.dumps(msg))
+
     else:
         GPIO.output(LUMIERE_PIN, GPIO.HIGH)
         print("DEL On")
-        client.publish(TOPIC_STATE, SMARTPLUG1_STATE_ON)
-        
+
+        # ===============================================
+        # turn on the smartplug and publish the new state
+        # ===============================================
+        msg = {}
+        msg['id'] = CLIENT_SMARTPLUG1
+        msg['cmd'] = SMARTPLUG1_STATE_ON
+        client.publish(TOPIC_STATE, json.dumps(msg))
+
+
 def on_message(client, userdata, message):
-    print("received message: " , str(message.payload.decode("utf-8")))
-    commande = str(message.payload.decode("utf-8"))
-    if commande == SMARTPLUG1_CMD_ON:
+
+    # ==========================================
+    # unmarshall the object from the sent string
+    # ========================================== 
+    print("received message: ", str(message.payload.decode("utf-8")))
+    msg = json.loads(str(message.payload.decode("utf-8")))
+
+    if msg['cmd'] == SMARTPLUG1_CMD_ON:
+
         GPIO.output(LUMIERE_PIN, GPIO.HIGH)
         print("DEL On")
-        client.publish(TOPIC_STATE, SMARTPLUG1_STATE_ON)
-    elif commande == SMARTPLUG1_CMD_OFF:
+
+        # ===============================================
+        # turn on the smartplug and publish the new state
+        # ===============================================
+        msg = {}
+        msg['id'] = CLIENT_SMARTPLUG1
+        msg['cmd'] = SMARTPLUG1_STATE_ON
+        client.publish(TOPIC_STATE, json.dumps(msg))
+
+    elif msg['cmd'] == SMARTPLUG1_CMD_OFF:
+
         GPIO.output(LUMIERE_PIN, GPIO.LOW)
         print("DEL Off")
-        client.publish(TOPIC_STATE, SMARTPLUG1_STATE_OFF)
+
+        # ===============================================
+        # turn off the smartplug and publish the new state
+        # ===============================================
+        msg = {}
+        msg['id'] = CLIENT_SMARTPLUG1
+        msg['cmd'] = SMARTPLUG1_STATE_OFF
+        client.publish(TOPIC_STATE, json.dumps(msg))
+
 
 """ Les GPIO  """
 signal.signal(signal.SIGINT, terminer)
@@ -55,7 +98,9 @@ try:
 except Exception:
     print("Problème avec les GPIO")
 
-""" MQTT """
+# ====================================
+# setup MQTT to subscribes to commands
+# ====================================
 client = mqtt.Client(CLIENT_SMARTPLUG1)
 client.connect(MQTT_BROKER) 
 client.loop_start()
@@ -65,4 +110,3 @@ client.on_message = on_message
 while True:
     time.sleep(0.5)
     
-
