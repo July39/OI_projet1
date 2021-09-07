@@ -11,12 +11,24 @@ from project1.constants import *
 import sys
 import signal
 import time
+import json
+
 
 PORTE_PIN = 5
 BOUTON_PIN = 17
 SIRENE_PIN = 18
 DEL_PIN = 23
-   
+
+
+# ===============================================================
+# helper function used to publish new IoT object state using MQTT
+# ===============================================================
+def publish_state(state):
+    msg = {}
+    msg['id'] = CLIENT_SYSALARM
+    msg['cmd'] = state
+    client.publish(TOPIC_STATE, json.dumps(msg))
+
 class Etat(Enum):
     OFF = 1
     DELAI_E = 2
@@ -66,36 +78,71 @@ def setEtat(event,commande = ''):
             etat = Etat.OFF
             GPIO.output(DEL_PIN, GPIO.LOW)
             GPIO.output(SIRENE_PIN, GPIO.LOW)
+
+            # ====================================
+            # publish the new state; alaram is off
+            # ====================================
+            publish_state(SYSALARM_STATE_OFF)
+            
             # Affficher ecran armé
         elif etat == Etat.DELAI_S:
             print ("Desarmer")
             etat = Etat.OFF
             #thread.stop()
             GPIO.output(DEL_PIN, GPIO.LOW)
+
+            # ====================================
+            # publish the new state; alaram is off
+            # ====================================
+            publish_state(SYSALARM_STATE_OFF)
+
             # Affficher ecran armé  
         elif etat == Etat.SIRENE:
             print ("Desarmer")
             etat = Etat.OFF
             GPIO.output(DEL_PIN, GPIO.LOW)
-            GPIO.output(SIRENE_PIN, GPIO.LOW) 
+            GPIO.output(SIRENE_PIN, GPIO.LOW)
+
+            # ====================================
+            # publish the new state; alaram is off
+            # ====================================
+            publish_state(SYSALARM_STATE_OFF)
+ 
             # Affficher ecran armé  
         elif etat == Etat.DELAI_E:
             print ("Desarmer")
             etat = Etat.OFF
             #thread.stop()
             GPIO.output(DEL_PIN, GPIO.LOW)
+
+            # ====================================
+            # publish the new state; alaram is off
+            # ====================================
+            publish_state(SYSALARM_STATE_OFF)
+
             # Affficher ecran armé                  
     elif event == Event.finDelais:
         if etat == Etat.DELAI_S:
             print ("Armer")
             etat = Etat.ARME
             GPIO.output(DEL_PIN, GPIO.HIGH)
+
+            # ===================================
+            # publish the new state; alaram is on
+            # ===================================
+            publish_state(SYSALARM_STATE_ON)
+            
             # Afficher ecran Désarmé
         elif etat == Etat.DELAI_E:
             print("Sirene")
-            client.publish(TOPIC_STATE, SYSALARM_INTRUDER)
             etat = Etat.SIRENE
             GPIO.output(SIRENE_PIN, GPIO.HIGH)
+
+            # =================================
+            # publish the new state; intruder!!
+            # =================================
+            publish_state(SYSALARM_INTRUDER)
+            
     elif event == Event.porte:
         if etat == Etat.ARME:
             print("Ouverture d'une porte")
@@ -109,12 +156,22 @@ def setEtat(event,commande = ''):
             print("Armeture systeme")
             etat = Etat.ARME
             GPIO.output(DEL_PIN, GPIO.HIGH)
+
+            # ===================================
+            # publish the new state; alaram is on
+            # ===================================
+            publish_state(SYSALARM_STATE_ON)
+
         else :
             print("Désarmé systeme alarme")
             etat = Etat.OFF
             GPIO.output(DEL_PIN, GPIO.LOW)
             GPIO.output(SIRENE_PIN, GPIO.LOW)
-            
+
+            # ====================================
+            # publish the new state; alaram is off
+            # ====================================
+            publish_state(SYSALARM_STATE_OFF)
 
 def blinkDEL():
     DELAI = 5
@@ -130,19 +187,33 @@ def blinkDEL():
         delai = delai + 1
     setEtat(Event.finDelais)
 
-
 def on_message(client, userdata, message):
-    print("received message: " , str(message.payload.decode("utf-8")))
-    commande = str(message.payload.decode("utf-8"))
-    if commande == SYSALARM_CMD_ON:
-        print("systeme armé par console")
-        setEtat(Event.boutonInterface,'ON')
-        client.publish(TOPIC_STATE, SYSALARM_STATE_ON)
-    elif commande == SYSALARM_CMD_OFF:
-        print("systeme desarme par la console")
-        setEtat(Event.boutonInterface,'OFF')
-        client.publish(TOPIC_STATE, SYSALARM_STATE_OFF)      
 
+    # ==========================================
+    # unmarshall the object from the sent string
+    # ========================================== 
+    print("received message: ", str(message.payload.decode("utf-8")))
+    msg = json.loads(str(message.payload.decode("utf-8")))
+
+    # =========================================================
+    # dispatch the command if it is intended to this IoT object
+    # =========================================================
+    if msg['id'] == CLIENT_SYSALARM:
+        if msg['cmd'] == SYSALARM_CMD_ON:
+
+            # =============================================================
+            # turn on the alarm system and publish the new state using MQTT
+            # =============================================================
+            print("systeme armé par console")
+            setEtat(Event.boutonInterface,'ON')
+
+        elif msg['cmd'] == SYSALARM_CMD_OFF:
+
+            # ==============================================================
+            # turn off the alarm system and publish the new state using MQTT
+            # ==============================================================
+            print("systeme desarme par la console")
+            setEtat(Event.boutonInterface,'OFF')
 
 ###################################            
 """ Mon programme """

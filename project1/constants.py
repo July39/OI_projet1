@@ -37,6 +37,8 @@ MONGODB_URI = "localhost"
 CLIENT_CONSOLE    = "Console"
 CLIENT_SMARTPLUG1 = "SmartPlug1"
 CLIENT_SYSALARM = "SysAlarm"
+CLIENT_LIGHT = "Light"
+
 
 """MQTT topics"""
 TOPIC_STATE = "Gills/Etats"
