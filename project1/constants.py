@@ -7,8 +7,10 @@ __all__ = ["DATE_FORMAT",
            "CLIENT_CONSOLE", 
            "CLIENT_SMARTPLUG1",
            "CLIENT_SYSALARM",
+           "CLIENT_ALL",
            "TOPIC_STATE",
            "TOPIC_COMMAND",
+           "ALL_CMD_GET_STATUS",
            "SYSALARM_STATE_OFF",
            "SYSALARM_STATE_ON",
            "SYSALARM_CMD_OFF",
@@ -37,10 +39,15 @@ MONGODB_URI = "localhost"
 CLIENT_CONSOLE    = "Console"
 CLIENT_SMARTPLUG1 = "SmartPlug1"
 CLIENT_SYSALARM = "SysAlarm"
+CLIENT_LIGHT = "Light"
+CLIENT_ALL = "All IoT"
 
 """MQTT topics"""
 TOPIC_STATE = "Gills/Etats"
 TOPIC_COMMAND = "Gills/Commandes"
+
+"""All IoT commands"""
+ALL_CMD_GET_STATUS = "Get Status"
 
 """SmartPlug1 states"""
 SMARTPLUG1_STATE_OFF = "off"

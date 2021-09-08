@@ -16,14 +16,14 @@ def get_events():
     col = db.events
     return col
 
-
-def log_event(state: str):
+def log_event(msg):
 
     events = get_events()
     event = {
                 "date":  date.today().strftime(DATE_FORMAT),
                 "time":  datetime.now().strftime(TIME_FORMAT),
-                "state": state
+                "id": msg['id'],
+                "cmd": msg['cmd'],
              }
     print(events.insert_one(event).inserted_id)
 

@@ -10,18 +10,31 @@ import signal
 import json
 from project1.constants import *
 
+# ======================
+# module level constants
+# ======================
 
 BOUTON_PIN  = 17
 LUMIERE_PIN = 18
 DEL_PIN     = 23
 
+# ===============================================================
+# helper function used to publish new IoT object state using MQTT
+# ===============================================================
+def publish_state(state):
+    msg = {}
+    msg['id'] = CLIENT_SMARTPLUG1
+    msg['cmd'] = state
+    client.publish(TOPIC_STATE, json.dumps(msg))
 
+# ====================================
+# event handlers
+# ====================================
 def terminer(signum, frame):
     print("Terminer")
     GPIO.output(LUMIERE_PIN, GPIO.LOW)
     GPIO.cleanup()
     sys.exit(0)
-
 
 def event_bouton(channel):
     print("event_17: Bouton poussoir")
@@ -29,26 +42,19 @@ def event_bouton(channel):
         GPIO.output(LUMIERE_PIN, GPIO.LOW)
         print("DEL Off")
 
-        # ================================================
-        # turn off the smartplug and publish the new state
-        # ================================================
-        msg = {}
-        msg['id'] = CLIENT_SMARTPLUG1
-        msg['cmd'] = SMARTPLUG1_STATE_OFF
-        client.publish(TOPIC_STATE, json.dumps(msg))
+        # =======================================
+        # publish the new state; smartplug is off
+        # =======================================
+        publish_state(SMARTPLUG1_STATE_OFF)
 
     else:
         GPIO.output(LUMIERE_PIN, GPIO.HIGH)
         print("DEL On")
 
-        # ===============================================
-        # turn on the smartplug and publish the new state
-        # ===============================================
-        msg = {}
-        msg['id'] = CLIENT_SMARTPLUG1
-        msg['cmd'] = SMARTPLUG1_STATE_ON
-        client.publish(TOPIC_STATE, json.dumps(msg))
-
+        # ======================================
+        # publish the new state; smartplug is on
+        # ======================================
+        publish_state(SMARTPLUG1_STATE_ON)
 
 def on_message(client, userdata, message):
 
@@ -58,31 +64,38 @@ def on_message(client, userdata, message):
     print("received message: ", str(message.payload.decode("utf-8")))
     msg = json.loads(str(message.payload.decode("utf-8")))
 
-    if msg['cmd'] == SMARTPLUG1_CMD_ON:
+    # =========================================================
+    # dispatch the command if it is intended to this IoT object
+    # =========================================================
+    if msg['id'] == CLIENT_SMARTPLUG1 or msg['id'] == CLIENT_ALL:
 
-        GPIO.output(LUMIERE_PIN, GPIO.HIGH)
-        print("DEL On")
+        if msg['cmd'] == SMARTPLUG1_CMD_ON:
 
-        # ===============================================
-        # turn on the smartplug and publish the new state
-        # ===============================================
-        msg = {}
-        msg['id'] = CLIENT_SMARTPLUG1
-        msg['cmd'] = SMARTPLUG1_STATE_ON
-        client.publish(TOPIC_STATE, json.dumps(msg))
+            # ==========================================================
+            # turn on the smartplug and publish the new state using MQTT
+            # ==========================================================
+            GPIO.output(LUMIERE_PIN, GPIO.HIGH)
+            print("DEL On")
+            publish_state(SMARTPLUG1_STATE_ON)
 
-    elif msg['cmd'] == SMARTPLUG1_CMD_OFF:
+        elif msg['cmd'] == SMARTPLUG1_CMD_OFF:
 
-        GPIO.output(LUMIERE_PIN, GPIO.LOW)
-        print("DEL Off")
+            # ===========================================================
+            # turn off the smartplug and publish the new state using MQTT
+            # ===========================================================
+            GPIO.output(LUMIERE_PIN, GPIO.LOW)
+            print("DEL Off")
+            publish_state(SMARTPLUG1_STATE_OFF)
 
-        # ===============================================
-        # turn off the smartplug and publish the new state
-        # ===============================================
-        msg = {}
-        msg['id'] = CLIENT_SMARTPLUG1
-        msg['cmd'] = SMARTPLUG1_STATE_OFF
-        client.publish(TOPIC_STATE, json.dumps(msg))
+        elif msg['cmd'] == ALL_CMD_GET_STATUS:
+
+            # ===============================
+            # publish the object's state only
+            # ===============================
+            if GPIO.input(LUMIERE_PIN):
+                publish_state(SMARTPLUG1_STATE_ON)
+            else:
+                publish_state(SMARTPLUG1_STATE_OFF)
 
 
 """ Les GPIO  """
