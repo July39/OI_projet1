@@ -84,10 +84,21 @@ def show_history():
 
     # ======================================
     # fill up the widget with all the events
+    #
+    # use project1;
+    # db.events.drop();
+    # db.createCollection("events", {capped: true, size: 10});
+    #
     # ======================================
     col = get_events()
+    # for event in col.find().sort("time", -1).limit(10):
+    # db.createCollection("events", {capped: true, size: 10})
     for event in col.find():
-        resultat.insert(INSERT, event["date"] + "\t" + event["time"] + "\t" + event["id"] + "\t" + event["cmd"] + "\n")
+        resultat.insert(INSERT, 
+                       event["date"] + "\t" + 
+                       event["time"] + "\t" + 
+                       event["id"] + "\t" + 
+                       event["cmd"] + "\n")
 
     # ===========================
     # perform window message loop
