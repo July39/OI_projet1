@@ -56,7 +56,6 @@ def event_bouton(channel):
         # ======================================
         publish_state(SMARTPLUG1_STATE_ON)
 
-
 def on_message(client, userdata, message):
 
     # ==========================================
@@ -68,7 +67,8 @@ def on_message(client, userdata, message):
     # =========================================================
     # dispatch the command if it is intended to this IoT object
     # =========================================================
-    if msg['id'] == CLIENT_SMARTPLUG1:
+    if msg['id'] == CLIENT_SMARTPLUG1 or msg['id'] == CLIENT_ALL:
+
         if msg['cmd'] == SMARTPLUG1_CMD_ON:
 
             # ==========================================================
@@ -86,6 +86,16 @@ def on_message(client, userdata, message):
             GPIO.output(LUMIERE_PIN, GPIO.LOW)
             print("DEL Off")
             publish_state(SMARTPLUG1_STATE_OFF)
+
+        elif msg['cmd'] == ALL_CMD_GET_STATUS:
+
+            # ===============================
+            # publish the object's state only
+            # ===============================
+            if GPIO.input(LUMIERE_PIN):
+                publish_state(SMARTPLUG1_STATE_ON)
+            else:
+                publish_state(SMARTPLUG1_STATE_OFF)
 
 
 """ Les GPIO  """

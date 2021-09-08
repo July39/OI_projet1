@@ -198,7 +198,8 @@ def on_message(client, userdata, message):
     # =========================================================
     # dispatch the command if it is intended to this IoT object
     # =========================================================
-    if msg['id'] == CLIENT_SYSALARM:
+    if msg['id'] == CLIENT_SYSALARM or msg['id'] == CLIENT_ALL:
+
         if msg['cmd'] == SYSALARM_CMD_ON:
 
             # =============================================================
@@ -214,6 +215,19 @@ def on_message(client, userdata, message):
             # ==============================================================
             print("systeme desarme par la console")
             setEtat(Event.boutonInterface,'OFF')
+
+        elif msg['cmd'] == ALL_CMD_GET_STATUS:
+
+            # ===============================
+            # publish the object's state only
+            # ===============================
+            if etat == Etat.OFF:
+                state = SYSALARM_STATE_OFF
+            elif etat == Etat.ARME:
+                state = SYSALARM_STATE_ON
+            elif etat == Etat.SIRENE:
+                state = SYSALARM_INTRUDER
+            publish_state(state)
 
 ###################################            
 """ Mon programme """

@@ -87,7 +87,7 @@ def show_history():
     # ======================================
     col = get_events()
     for event in col.find():
-        resultat.insert(INSERT, event["date"] + "\t" + event["time"] + "\t" + event["state"] + "\n")
+        resultat.insert(INSERT, event["date"] + "\t" + event["time"] + "\t" + event["id"] + "\t" + event["cmd"] + "\n")
 
     # ===========================
     # perform window message loop
@@ -101,7 +101,7 @@ def on_message(client, userdata, message):
     # ==================================================
     msg = json.loads(str(message.payload.decode("utf-8")))
     print("received event: ", msg['id'], msg['cmd'])
-    log_event(msg['cmd'])
+    log_event(msg)
 
     # =================================
     # update user interface accordingly
@@ -135,15 +135,6 @@ def on_message(client, userdata, message):
             lblEtat2.configure(text=STR_OFF)
         elif msg['cmd'] == LIGHT_STATE_ON:
             lblEtat2.configure(text=STR_ON)
-
-# ====================================
-# setup MQTT to subscribes to states
-# ===================================
-client = mqtt.Client(CLIENT_CONSOLE)
-client.connect(MQTT_BROKER) 
-client.loop_start()
-client.subscribe(TOPIC_STATE)
-client.on_message = on_message
 
 # ==========================================
 # create the main window
@@ -190,4 +181,24 @@ lblEtat4.grid(row = 6, column = 0, columnspan = 2)
 btn6 = Button(fen1, text='Afficher',fg='blue', font="Helvetica 20 bold", command = show_history)
 btn6.grid(row = 7, column = 0)
 
+# ===================================
+# setup MQTT to subscribes to states
+# ===================================
+client = mqtt.Client(CLIENT_CONSOLE)
+client.connect(MQTT_BROKER) 
+client.loop_start()
+client.subscribe(TOPIC_STATE)
+client.on_message = on_message
+
+# =================================
+# get the status of all IoT objects
+# =================================
+msg = {}
+msg['id'] = CLIENT_ALL
+msg['cmd'] = ALL_CMD_GET_STATUS
+client.publish(TOPIC_COMMAND, json.dumps(msg))
+
+# ============================
+# perform windows message loop
+# ============================
 fen1.mainloop()
