@@ -125,9 +125,9 @@ def on_message(client, userdata, message):
         if msg['cmd'] == SYSALARM_STATE_OFF:
             lblEtat1.configure(text=f"Alarm: {STR_OFF}")
         elif msg['cmd'] == SYSALARM_STATE_ON:
-            lblEtat1.configure(text=text=f"Alarm: {STR_ON}")
+            lblEtat1.configure(text=f"Alarm: {STR_ON}")
         elif msg['cmd'] == SYSALARM_INTRUDER:
-            lblEtat1.configure(text=text=f"Alarm: {STR_INTRUDER}")
+            lblEtat1.configure(text=f"Alarm: {STR_INTRUDER}")
 
     # ===================
     # update light dimmer
@@ -144,7 +144,7 @@ def on_message(client, userdata, message):
 fen1 = Tk()
 fen1.protocol("WM_DELETE_WINDOW", fermer)
 fen1.title("  Console de controle  ")
-fen1.geometry("250x350")
+fen1.geometry("225x350")
 
 # =================================================================
 # alarm widgets
