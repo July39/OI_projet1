@@ -14,7 +14,19 @@ STR_ON = "ON"
 STR_OFF = "OFF"
 STR_INTRUDER = "Intruder!"
 
+# ======================
+# misc. helper functions
+# ======================
+def publish_command(id, cmd):
+    msg = {}
+    msg['id'] = id
+    msg['cmd'] = cmd
+    client.publish(TOPIC_COMMAND, json.dumps(msg))
+    print(msg)
 
+# =====================
+# widget event handlers
+# =====================
 def fermer():
     print('Quitter proprement')
     client.loop_stop()
@@ -26,43 +38,28 @@ def sys_alarm_cmd_on():
     # ===============================
     # turn on alarm system using MQTT
     # ===============================
-    print('alarm system off by console')
-    msg = {}
-    msg['id'] = CLIENT_SYSALARM
-    msg['cmd'] = SYSALARM_CMD_ON
-    client.publish(TOPIC_COMMAND, json.dumps(msg))
+    publish_command(CLIENT_SYSALARM, SYSALARM_CMD_ON)
 
 def sys_alarm_cmd_off():
 
     # ===============================
-    # turn on alarm system using MQTT
+    # turn off alarm system using MQTT
     # ===============================
-    print('alarm system off by console')
-    msg = {}
-    msg['id'] = CLIENT_SYSALARM
-    msg['cmd'] = SYSALARM_CMD_OFF
-    client.publish(TOPIC_COMMAND, json.dumps(msg))
+    publish_command(CLIENT_SYSALARM, SYSALARM_CMD_OFF)
 
 def turn_smartplug_on():
 
     # ============================
     # turn on smartplug using MQTT
     # ============================
-    print('smart plug on by console')
-    msg = {}
-    msg['id'] = CLIENT_SMARTPLUG1
-    msg['cmd'] = SMARTPLUG1_CMD_ON
-    client.publish(TOPIC_COMMAND, json.dumps(msg))
+    publish_command(CLIENT_SMARTPLUG1, SMARTPLUG1_CMD_ON)
 
 def turn_smartplug_off():
 
     # =============================
     # turn off smartplug using MQTT
     # =============================
-    msg = {}
-    msg['id'] = CLIENT_SMARTPLUG1
-    msg['cmd'] = SMARTPLUG1_CMD_OFF
-    client.publish(TOPIC_COMMAND, json.dumps(msg))
+    publish_command(CLIENT_SMARTPLUG1, SMARTPLUG1_CMD_OFF)
 
 def light_cmd_on():
     pass
@@ -85,20 +82,22 @@ def show_history():
     # ======================================
     # fill up the widget with all the events
     #
+    # $ mongo
     # use project1;
     # db.events.drop();
     # db.createCollection("events", {capped: true, size: 10});
     #
     # ======================================
     col = get_events()
-    # for event in col.find().sort("time", -1).limit(10):
-    # db.createCollection("events", {capped: true, size: 10})
-    for event in col.find():
-        resultat.insert(INSERT, 
-                       event["date"] + "\t" + 
-                       event["time"] + "\t" + 
-                       event["id"] + "\t" + 
-                       event["cmd"] + "\n")
+    for event in col.find({}):
+        try:
+            resultat.insert(INSERT, 
+                        event["date"] + "\t" + 
+                        event["time"] + "\t" + 
+                        event["id"]   + "\t" + 
+                        event["cmd"]  + "\n")
+        except Exception as e:
+            print(e)
 
     # ===========================
     # perform window message loop
@@ -111,7 +110,11 @@ def on_message(client, userdata, message):
     # decode the event and logs it into mongodb database
     # ==================================================
     msg = json.loads(str(message.payload.decode("utf-8")))
-    print("received event: ", msg['id'], msg['cmd'])
+    print(msg)
+
+    # =====================================
+    # log the event in the mongo collection
+    # =====================================
     log_event(msg)
 
     # =================================
@@ -204,10 +207,7 @@ client.on_message = on_message
 # =================================
 # get the status of all IoT objects
 # =================================
-msg = {}
-msg['id'] = CLIENT_ALL
-msg['cmd'] = ALL_CMD_GET_STATUS
-client.publish(TOPIC_COMMAND, json.dumps(msg))
+publish_command(CLIENT_ALL, ALL_CMD_GET_STATUS)
 
 # ============================
 # perform windows message loop

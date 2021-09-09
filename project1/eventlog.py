@@ -9,12 +9,19 @@ from project1.constants import *
 __all__ = ["get_events", "log_event"]
 
 
+events = None
+
+
 def get_events():
 
-    client = pymongo.MongoClient(MONGODB_URI)
-    db = client.project1
-    col = db.events
-    return col
+    global events
+
+    if events is None:
+        client = pymongo.MongoClient(MONGODB_URI)
+        db = client.project1
+        events = db.events
+
+    return events
 
 def log_event(msg):
 

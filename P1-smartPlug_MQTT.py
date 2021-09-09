@@ -119,7 +119,15 @@ client.connect(MQTT_BROKER)
 client.loop_start()
 client.subscribe(TOPIC_COMMAND)
 client.on_message = on_message 
-    
+
+# ===============================
+# publish the object's state only
+# ===============================
+if GPIO.input(LUMIERE_PIN):
+    publish_state(SMARTPLUG1_STATE_ON)
+else:
+    publish_state(SMARTPLUG1_STATE_OFF)
+
 while True:
     time.sleep(0.5)
     
