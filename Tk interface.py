@@ -71,14 +71,14 @@ def light_cmd_off():
     pass
 
 def show_history():
-
     # =====================================
     # create the new window and its widgets
     # =====================================
     fen2 = Tk()
     fen2.title("Historique")
+    fen2.geometry("300x225")
     resultat = Text(fen2)
-    resultat.config(width = 40, height = 10, font="Helvetica")
+    resultat.config(width = 40, height = 12, font="Helvetica")
     resultat.grid(row = 0, column = 0, columnspan = 3)
     Button(fen2, text = "Quitter", font="Helvetica 15", command =show_history)
 
@@ -86,13 +86,15 @@ def show_history():
     # fill up the widget with all the events
     # ======================================
     col = get_events()
-    for event in col.find():
+    log10 = col.find().sort([['date',-1],['time',-1]]).limit(10)
+    for event in log10:
         resultat.insert(INSERT, event["date"] + "\t" + event["time"] + "\t" + event["id"] + "\t" + event["cmd"] + "\n")
-
+    
     # ===========================
     # perform window message loop
     # ===========================
     fen2.mainloop()
+
 
 def on_message(client, userdata, message):
 
@@ -141,7 +143,8 @@ def on_message(client, userdata, message):
 # ==========================================
 fen1 = Tk()
 fen1.protocol("WM_DELETE_WINDOW", fermer)
-fen1.title("Console de controle")
+fen1.title("  Console de controle  ")
+fen1.geometry("250x350")
 
 # =================================================================
 # alarm widgets
@@ -177,9 +180,9 @@ btn6.grid(row = 5, column = 1)
 # log history widgets
 # ================================================================
 lblEtat4 = Label(fen1, text="Historique", fg='black', font="Helvetica 20 bold")
-lblEtat4.grid(row = 6, column = 0, columnspan = 2)
+lblEtat4.grid(row = 8, column = 0, columnspan = 2)
 btn6 = Button(fen1, text='Afficher',fg='blue', font="Helvetica 20 bold", command = show_history)
-btn6.grid(row = 7, column = 0)
+btn6.grid(row = 9, column = 1)
 
 # ===================================
 # setup MQTT to subscribes to states
