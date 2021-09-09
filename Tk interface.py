@@ -114,20 +114,20 @@ def on_message(client, userdata, message):
     # ================
     if msg['id'] == CLIENT_SMARTPLUG1:
         if msg['cmd'] == SMARTPLUG1_STATE_OFF:
-            lblEtat3.configure(text=STR_OFF)
+            lblEtat3.configure(text=f"Smartplug: {STR_OFF}")
         elif msg['cmd'] == SMARTPLUG1_STATE_ON:
-            lblEtat3.configure(text=STR_ON)
+            lblEtat3.configure(text=f"Smartplug: {STR_ON}")
 
     # ===================
     # update alarm system
     # ===================
     elif msg['id'] == CLIENT_SYSALARM:
         if msg['cmd'] == SYSALARM_STATE_OFF:
-            lblEtat1.configure(text=STR_OFF)
+            lblEtat1.configure(text=f"Alarm: {STR_OFF}")
         elif msg['cmd'] == SYSALARM_STATE_ON:
-            lblEtat1.configure(text=STR_ON)
+            lblEtat1.configure(text=text=f"Alarm: {STR_ON}")
         elif msg['cmd'] == SYSALARM_INTRUDER:
-            lblEtat1.configure(text=STR_INTRUDER)
+            lblEtat1.configure(text=text=f"Alarm: {STR_INTRUDER}")
 
     # ===================
     # update light dimmer
