@@ -91,6 +91,13 @@ python -m pip install pymongo
  - ajouter.py
  - lireCollection.py
 
+## Pour désactiver mongoDB et le partir au besoin
+
+```bash
+sudo systemctl disable mongodb
+
+sudo systemctl start mongodb
+```
 ## Ligne de commandes
 Vérifier l'ajout avec les commandes suivantes:
 
