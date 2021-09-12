@@ -1,3 +1,11 @@
-Début d'un grand projet
-Écrivons ici les notes pour l'équipe
-Pas encore terminer l'interface mais une bonne partie est fait!
+Voici le projet de 
+    July DUlac
+    François Rochefort
+    Stephane
+
+La vidéo demonstration de notre projet:
+    https://vimeo.com/603267922
+
+Nous serons là lundi pm.
+
+Merci
