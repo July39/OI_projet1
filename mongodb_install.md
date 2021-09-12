@@ -121,6 +121,7 @@ contacts
 > exit
 bye
 $
+db.events.find().sort({date:-1, time:-1}).limit(10)
 ```
 
 Effacer la base de données demo
