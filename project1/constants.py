@@ -44,8 +44,8 @@ CLIENT_LIGHT = "Light"
 CLIENT_ALL = "All IoT"
 
 """MQTT topics"""
-TOPIC_STATE = "Gills/Etats"
-TOPIC_COMMAND = "Gills/Commandes"
+TOPIC_STATE = "*****/Etats"
+TOPIC_COMMAND = "*****/Commandes"
 
 """All IoT commands"""
 ALL_CMD_GET_STATUS = "Get Status"
